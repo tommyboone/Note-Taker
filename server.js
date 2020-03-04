@@ -3,16 +3,13 @@ const fs = require("fs");
 const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 8000;
+const json = require("./Develop/db/db.json")
 
 app.listen(PORT, () => {
   console.log("Server is listening on http://localhost:" + PORT);
 });
 
 let notesArray = [
-  {
-    title: "",
-    text: ""
-  }
 ];
 
 app.use(express.json());
@@ -35,25 +32,57 @@ app.get("http://localhost:8000/api/notes", (err, res) => {
 
 //WRITES THE NOTE TO A JSON FILE
 app.post("/api/notes", (req, res) => {
-  console.log("hi");
-  let newNote = req.body;
-  notesArray.push(newNote);
-  console.log(notesArray)
-
-  // res.json(JSON.parse(notesArray));
-  res.json(newNote);
-})
   try {
-    notesArray = fs.readFileSync(
-      "./Develop/db/db.json",
-      newNote,
-      "utf-8",
-      err => {
-        if (err) throw err;
-        console.log("An error occured");
-      }
-    );
-  } catch (err) {}
+    // reads the json file
+    notesArray = fs.readFileSync("./Develop/db/db.json", "utf8");
+    console.log(notesArray);
+
+    // parse the data to get an array of objects
+    notesArray = JSON.parse(notesArray);
+    // Set new notes id
+    req.body.id = notesArray.length;
+    // add the new note to the array of note objects
+    notesArray.push(req.body); // req.body - user input
+    // make it string(stringify)so you can write it to the file
+    notesArray = JSON.stringify(notesArray);
+    // writes the new note to file
+    fs.writeFile("./Develop/db/db.json", notesArray, "utf8", function(err) {
+      // error handling
+      if (err) throw err;
+    });
+    // changeit back to an array of objects & send it back to the browser(client)
+    res.json(JSON.parse(notesArray));
+
+    // error Handling
+  } catch (err) {
+    throw err;
+   
+  }
+
+  // console.log("hi");
+ 
+  // try {
+  //   notesArray = fs.readFileSync(
+  //     "./Develop/db/db.json",
+  //     newNote,
+  //     "utf-8",
+  //     err => {
+  //       if (err) throw err;
+  //       console.log("An error occured");
+  //     }
+  //   );
+  // } catch (err) {}
+
+  // console.log(json)
+  // notesArray.push(newNote);
+  // json.push(notesArray)
+  // console.log(notesArray)
+
+  // newNote.title= notesArray[i].id;
+
+//  JSON.parse(notesArray);
+  
+})
 
 
 //GET Requests
