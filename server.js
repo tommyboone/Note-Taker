@@ -59,28 +59,7 @@ app.post("/api/notes", (req, res) => {
    
   }
 
-  // console.log("hi");
  
-  // try {
-  //   notesArray = fs.readFileSync(
-  //     "./Develop/db/db.json",
-  //     newNote,
-  //     "utf-8",
-  //     err => {
-  //       if (err) throw err;
-  //       console.log("An error occured");
-  //     }
-  //   );
-  // } catch (err) {}
-
-  // console.log(json)
-  // notesArray.push(newNote);
-  // json.push(notesArray)
-  // console.log(notesArray)
-
-  // newNote.title= notesArray[i].id;
-
-//  JSON.parse(notesArray);
   
 })
 
