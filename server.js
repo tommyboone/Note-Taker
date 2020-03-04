@@ -8,7 +8,12 @@ app.listen(PORT, () => {
   console.log("Server is listening on http://localhost:" + PORT);
 });
 
-let notesArray = [];
+let notesArray = [
+  {
+    title: "",
+    text: ""
+  }
+];
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,51 +34,56 @@ app.get("http://localhost:8000/api/notes", (err, res) => {
 });
 
 //WRITES THE NOTE TO A JSON FILE
-app.post("http://localhost:8000/api/notes", (err, res) =>{
- 
-  try{
-    fs.readFileSync("./Develop/db/db.json", notesArray, "utf-8", (err) => {
-      if (err)
-      throw(err);
-    });
-     res.json(JSON.parse(notesArray));
-  } catch(err){
-  
-   
-  }
+app.post("/api/notes", (req, res) => {
+  console.log("hi");
+  let newNote = req.body;
+  notesArray.push(newNote);
+  console.log(notesArray)
+
+  // res.json(JSON.parse(notesArray));
+  res.json(newNote);
 })
+  try {
+    notesArray = fs.readFileSync(
+      "./Develop/db/db.json",
+      newNote,
+      "utf-8",
+      err => {
+        if (err) throw err;
+        console.log("An error occured");
+      }
+    );
+  } catch (err) {}
+
 
 //GET Requests
-app.get("/notes", (req,res) =>{
-  res.sendFile(path.join(__dirname,"Develop/public/notes.html"))
+app.get("/notes", (req, res) => {
+  res.sendFile(path.join(__dirname, "Develop/public/notes.html"));
 });
 
-app.get("/api/notes", (req,res) =>{
-  return res.sendFile(path.join(__dirname, "Develop/db/db.json"))
-})
-
+app.get("/api/notes", (req, res) => {
+  return res.sendFile(path.join(__dirname, "Develop/db/db.json"));
+});
 
 //DELETE Request
 
 app.delete("/api/notes/:id", (req, res) => {
-  try{
+  try {
     notesArray = fs.readFileSync("./Develop/db/db.json", "utf-8");
     notesArray = JSON.parse(notesArray);
-    notesArray = notesArray.filter (function(note) {
+    notesArray = notesArray.filter(function(note) {
       return note.id != req.params.id;
     });
     notesArray = JSON.stringify(notesArray);
-    
+
     fs.writeFile("./Develop/db/db.json", notesArray, "utf8", function(err) {
       //
       if (err) throw err;
     });
 
     // change it back to an array of objects & send it back to the browser (client)
-    res.send(JSON.parse(notesData));
-
+    res.send(JSON.parse(notesArray));
   } catch (err) {
     throw err;
-
   }
-})
+});
