@@ -3,18 +3,21 @@ const fs = require("fs");
 const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 8000;
-const json = require("./Develop/db/db.json")
+
 
 app.listen(PORT, () => {
   console.log("Server is listening on http://localhost:" + PORT);
 });
 
-let notesArray = [
-];
+let notesArray = [];
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "Develop/public")));
+
+app.get("/", function(req,res){
+  res.sendFile(path.join(__dirname, "index.html"))
+});
 
 //API CALL FOR NOTES, SENDS TO BROWSER AS AN ARRAY OBJECT
 app.get("http://localhost:8000/api/notes", (err, res) => {
@@ -24,10 +27,10 @@ app.get("http://localhost:8000/api/notes", (err, res) => {
 
     notesArray = JSON.parse(notesArray);
   } catch (err) {
-    console.log("\n error (in app.get.catch):");
+    console.log("error");
     console.log(err);
   }
-  res.json(notesData);
+  res.json(notesArray);
 });
 
 //WRITES THE NOTE TO A JSON FILE
@@ -42,7 +45,7 @@ app.post("/api/notes", (req, res) => {
     // Set new notes id
     req.body.id = notesArray.length;
     // add the new note to the array of note objects
-    notesArray.push(req.body); // req.body - user input
+    notesArray.push(req.body);
     // make it string(stringify)so you can write it to the file
     notesArray = JSON.stringify(notesArray);
     // writes the new note to file
@@ -50,7 +53,7 @@ app.post("/api/notes", (req, res) => {
       // error handling
       if (err) throw err;
     });
-    // changeit back to an array of objects & send it back to the browser(client)
+    // changeit back to an array of objects & send it back to the client
     res.json(JSON.parse(notesArray));
 
     // error Handling
@@ -58,12 +61,8 @@ app.post("/api/notes", (req, res) => {
     throw err;
    
   }
-
- 
   
 })
-
-
 //GET Requests
 app.get("/notes", (req, res) => {
   res.sendFile(path.join(__dirname, "Develop/public/notes.html"));
@@ -89,7 +88,7 @@ app.delete("/api/notes/:id", (req, res) => {
       if (err) throw err;
     });
 
-    // change it back to an array of objects & send it back to the browser (client)
+    // change it back to an array of objects & send it back to the client
     res.send(JSON.parse(notesArray));
   } catch (err) {
     throw err;
