@@ -38,7 +38,7 @@ app.post("/api/notes", (req, res) => {
   try {
     // reads the json file
     notesArray = fs.readFileSync("./Develop/db/db.json", "utf8");
-    console.log(notesArray);
+    
 
     // parse the data to get an array of objects
     notesArray = JSON.parse(notesArray);
@@ -61,7 +61,7 @@ app.post("/api/notes", (req, res) => {
     throw err;
    
   }
-  
+  console.log(notesArray);
 })
 //GET Requests
 app.get("/notes", (req, res) => {
